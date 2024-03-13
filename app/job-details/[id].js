@@ -11,12 +11,15 @@ import { Stack, useRouter, useLocalSearchParams } from "expo-router";
 import {
   Company,
   JobAbout,
+  JobFooter,
   JobTabs,
   ScreenHeaderBtn,
   Specifics,
 } from "../../components";
 import useFetch from "../../hook/useFetch";
 import { SIZES, COLORS, icons } from "../../constants";
+const tabs = ["About", "Qualifications", "Responsibilites"];
+
 export default function JobDetails() {
   const router = useRouter();
   const params = useLocalSearchParams();
@@ -24,9 +27,37 @@ export default function JobDetails() {
   const { data, isLoading, error } = useFetch("job-details", {
     job_id: params.id,
   });
-
+  const [ActiveTab, setActiveTab] = useState("About");
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = () => {};
+  const displayTabContent = () => {
+    switch (ActiveTab) {
+      case "Qualifications":
+        return (
+          <Specifics
+            title="Qualifications"
+            points={data[0].job_highlights?.Qualifications ?? ["N/A"]}
+          />
+        );
+        break;
+      case "About":
+        return (
+          <JobAbout info={data[0].job_description ?? "No data provided"} />
+        );
+        break;
+      case "Responsibilites":
+        return (
+          <Specifics
+            title="Responsibilites"
+            points={data[0].job_highlights?.Responsibilities ?? ["N/A"]}
+          />
+        );
+        break;
+
+      default:
+        break;
+    }
+  };
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.lightWhite }}>
@@ -63,11 +94,26 @@ export default function JobDetails() {
             <Text>No data</Text>
           ) : (
             <View style={{ padding: SIZES.medium, paddingBottom: 100 }}>
-              <Company />
-              <JobTabs />
+              <Company
+                companyLogo={data[0].employer_logo}
+                jobTitle={data[0].job_title}
+                companyName={data[0].employer_name}
+                location={data[0].job_country}
+              />
+              <JobTabs
+                tabs={tabs}
+                ActiveTab={ActiveTab}
+                setActiveTab={setActiveTab}
+              />
+              {displayTabContent()}
             </View>
           )}
         </ScrollView>
+        <JobFooter
+          url={
+            data[0].job_google_link ?? "https://careers.google.com/jobs/results"
+          }
+        />
       </>
     </SafeAreaView>
   );

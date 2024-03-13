@@ -1,14 +1,36 @@
-import React from 'react'
-import { View, Text } from 'react-native'
+import React from "react";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
 
-import styles from './tabs.style'
+import styles from "./tabs.style";
+import { SIZES } from "../../../constants";
 
-const Tabs = () => {
+const TabButton = ({ name, activeTab, onHandleTab }) => {
   return (
-    <View>
-      <Text>Tabs</Text>
-    </View>
-  )
-}
+    <TouchableOpacity onPress={onHandleTab} style={styles.btn(name, activeTab)}>
+      <Text style={styles.btnText(name, activeTab)}>{name}</Text>
+    </TouchableOpacity>
+  );
+};
 
-export default Tabs
+const Tabs = ({ tabs, ActiveTab, setActiveTab }) => {
+  return (
+    <View style={styles.container}>
+      <FlatList
+        data={tabs}
+        renderItem={({ item }) => (
+          <TabButton
+            name={item}
+            activeTab={ActiveTab}
+            onHandleTab={() => setActiveTab(item)}
+          />
+        )}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyExtractor={(item) => item}
+        contentContainerStyle={{ columnGap: SIZES.small / 2 }}
+      />
+    </View>
+  );
+};
+
+export default Tabs;
