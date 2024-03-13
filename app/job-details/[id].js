@@ -24,12 +24,16 @@ export default function JobDetails() {
   const router = useRouter();
   const params = useLocalSearchParams();
 
-  const { data, isLoading, error } = useFetch("job-details", {
+  const { data, isLoading, error, refresh } = useFetch("job-details", {
     job_id: params.id,
   });
   const [ActiveTab, setActiveTab] = useState("About");
   const [refreshing, setRefreshing] = useState(false);
-  const onRefresh = () => {};
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    refresh();
+    setRefreshing(false);
+  }, []);
   const displayTabContent = () => {
     switch (ActiveTab) {
       case "Qualifications":

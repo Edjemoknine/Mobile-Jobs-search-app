@@ -34,7 +34,12 @@ const useFetch = (endpoint, query) => {
     fetchJobs();
   }, []);
 
-  return { data, isLoading, error };
+  const refresh = () => {
+    setisLoading(true);
+    fetchJobs();
+  };
+
+  return { data, isLoading, error, refresh };
 };
 
 export default useFetch;
